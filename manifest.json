@@ -1,0 +1,15 @@
+{
+  "manifest_version": 3,
+  "name": "Automatically Back Up Your Substack Drafts Every Hour",
+  "version": "1.0",
+  "options_page": "options.html",
+  "permissions": ["storage", "background", "alarms", "downloads", "downloads.shelf", "downloads.ui"],
+  "host_permissions": ["<all_urls>"],
+  "action": {
+    "default_title": "Fetch Drafts"
+  },
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  }
+}
