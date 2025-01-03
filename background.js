@@ -1,6 +1,6 @@
 // Set up a recurring alarm every 60 minutes
 chrome.runtime.onInstalled.addListener(() => {
-  chrome.alarms.create('fetchDraftsAlarm', { periodInMinutes: 1 });
+  chrome.alarms.create('fetchDraftsAlarm', { periodInMinutes: 60 });
 });
 
 // Listen for the alarm and fetch drafts
