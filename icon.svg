@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <!-- Background -->
+  <rect x="8" y="8" width="112" height="112" rx="12" ry="12" fill="#f2f2f2" stroke="#666" stroke-width="4"/>
+  
+  <!-- Letter S in Substack style -->
+  <path d="M40 30h48v12H40z" fill="#FF6719"/>
+  <path d="M40 50h48v12H40z" fill="#FF6719"/>
+  <path d="M40 70h48v12H40z" fill="#FF6719"/>
+  
+  <!-- Backup arrow -->
+  <path d="M64 58 L80 74 L72 74 L72 98 L56 98 L56 74 L48 74 Z" fill="#0366d6" stroke="#024787" stroke-width="2"/>
+  
+  <!-- Cloud icon -->
+  <path d="M89 50c0-8.9-7.2-16-16-16-6.8 0-12.6 4.2-14.9 10.2-1.5-0.6-3.1-0.9-4.8-0.9-7.2 0-13 5.8-13 13 0 0.7 0.1 1.4 0.2 2.1-5.6 0.6-9.9 5.3-9.9 11.1 0 6.2 5 11.2 11.2 11.2h47c5.5 0 10-4.5 10-10 0-5.2-3.9-9.4-9-9.9-0.1-5.8-3.3-10.8-8-13.6" fill="#0366d6" fill-opacity="0.3"/>
+</svg>

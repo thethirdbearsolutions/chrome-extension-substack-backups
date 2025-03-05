@@ -4,6 +4,13 @@
     <title>Extension Settings</title>
     <script src="options.js"></script>
     <style>
+      body {
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+        padding: 20px;
+        max-width: 800px;
+        margin: 0 auto;
+      }
       .status {
         margin-top: 10px;
         padding: 8px;
@@ -23,28 +30,97 @@
       }
       button {
         margin-right: 10px;
+        margin-bottom: 10px;
         padding: 5px 10px;
+      }
+      .stats-container {
+        margin-top: 20px;
+        padding: 15px;
+        background-color: #f8f9fa;
+        border-radius: 4px;
+      }
+      .stats-item {
+        margin-bottom: 10px;
+      }
+      .section {
+        margin-top: 30px;
+        border-top: 1px solid #ddd;
+        padding-top: 20px;
+      }
+      input[type="text"] {
+        width: 100%;
+        padding: 6px;
+        margin-top: 5px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+      }
+      label {
+        font-weight: bold;
+      }
+      .backup-container {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+      }
+      .backup-group {
+        padding: 15px;
+        background-color: #f8f9fa;
+        border-radius: 4px;
+      }
+      .backup-group h3 {
+        margin-top: 0;
       }
     </style>
   </head>
   <body>
-    <h1>Extension Settings</h1>
-    <form id="settingsForm">
-      <label for="substackUrl">Substack Base URL:</label>
-      <input type="text" id="substackUrl" placeholder="example.substack.com" required />
-      <br><br>
-      <label for="downloadDir">Drafts Download Directory:</label>
-      <input type="text" id="downloadDir" placeholder="substack-drafts" required />
-      <br><br>
-      <label for="publishedDir">Published Posts Directory:</label>
-      <input type="text" id="publishedDir" placeholder="substack-published" required />
-      <br><br>
-      <button type="submit">Save</button>
-    </form>
+    <h1>Substack Backup Settings</h1>
     
-    <div class="action-buttons">
-      <button id="backupDraftsNow">Backup Drafts Now</button>
-      <button id="backupPublishedNow">Backup Published Posts Now</button>
+    <div class="section">
+      <h2>Configuration</h2>
+      <form id="settingsForm">
+        <div>
+          <label for="substackUrl">Substack Base URL:</label>
+          <input type="text" id="substackUrl" placeholder="example.substack.com" required />
+        </div>
+        <br>
+        <div>
+          <label for="downloadDir">Drafts Download Directory:</label>
+          <input type="text" id="downloadDir" placeholder="substack-drafts" required />
+        </div>
+        <br>
+        <div>
+          <label for="publishedDir">Published Posts Directory:</label>
+          <input type="text" id="publishedDir" placeholder="substack-published" required />
+        </div>
+        <br>
+        <button type="submit">Save Settings</button>
+      </form>
+    </div>
+    
+    <div class="section">
+      <h2>Backup Options</h2>
+      
+      <div class="stats-container">
+        <h3>Current Status</h3>
+        <div class="stats-item" id="draftsStats">No drafts cached yet</div>
+        <div class="stats-item" id="publishedStats">No published posts cached yet</div>
+      </div>
+      
+      <div class="backup-container">
+        <div class="backup-group">
+          <h3>Drafts Backup</h3>
+          <p>Choose how to back up your draft posts:</p>
+          <button id="backupDraftsNow">Incremental Backup (New/Changed Only)</button>
+          <button id="forceBackupDraftsNow">Full Backup (All Content)</button>
+        </div>
+        
+        <div class="backup-group">
+          <h3>Published Posts Backup</h3>
+          <p>Choose how to back up your published posts:</p>
+          <button id="backupPublishedNow">Incremental Backup (New/Changed Only)</button>
+          <button id="forceBackupPublishedNow">Full Backup (All Content)</button>
+        </div>
+      </div>
     </div>
     
     <div id="status" class="status"></div>
