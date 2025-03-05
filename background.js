@@ -183,6 +183,8 @@ async function fetchAndSaveContent(contentType, forceFullBackup = false) {
             id: item.id,
             title: itemDetail.title,
             body: bodyContent,
+            bodyHtml: itemDetail.body_html || null,
+            truncatedBodyText: itemDetail.truncated_body_text || null,
             slug: item.slug || '',
             updatedAt: itemDetail.updated_at,
             publishedAt: itemDetail.post_date,
@@ -260,6 +262,7 @@ async function fetchAndSaveContent(contentType, forceFullBackup = false) {
             if (contentType === 'published' && cachedItem.publishedAt) {
               contentItem.publishedAt = cachedItem.publishedAt;
               contentItem.coverImage = cachedItem.coverImage;
+              contentItem.truncatedBodyText = cachedItem.truncatedBodyText;
             }
             
             mergedContent.push(contentItem);
@@ -366,29 +369,42 @@ async function generateAndSaveIndex(contentItems, directory, contentType) {
   const indexData = contentItems.map(item => {
     // Create filename - add published date for published posts
     let fileName = '';
+    let dirName = '';
+    
     if (contentType === 'published' && item.publishedAt) {
       const publishDate = new Date(item.publishedAt);
       const dateStr = publishDate.toISOString().split('T')[0]; // YYYY-MM-DD format
       fileName += `${dateStr}_`;
+      dirName += `${dateStr}_`;
     }
     
-    fileName += `${(item.title || 'untitled')
+    const slugPart = (item.title || 'untitled')
       .replace(/[^a-z0-9]/gi, '_')
-      .toLowerCase()}_${item.id}.json`;
+      .toLowerCase();
+    
+    fileName += `${slugPart}_${item.id}.json`;
+    dirName += `${slugPart}_${item.id}`;
     
     // Build index object based on content type
     const indexItem = {
       id: item.id,
       title: item.title || 'Untitled',
       slug: item.slug || '',
-      fileName: fileName,
       updatedAt: item.updatedAt
     };
     
-    // Add published-specific fields
+    // For published posts, use directory name instead of file name
     if (contentType === 'published') {
+      indexItem.baseFileName = dirName;
       indexItem.publishedAt = item.publishedAt;
       indexItem.coverImage = item.coverImage;
+      
+      // Add truncated text if available
+      if (item.truncatedBodyText) {
+        indexItem.truncatedBodyText = item.truncatedBodyText;
+      }
+    } else {
+      indexItem.fileName = fileName;
     }
     
     return indexItem;
@@ -431,29 +447,61 @@ async function saveContentToFile(contentItems, directory, contentType) {
       // Skip items with no body content (these were cached)
       if (!item.body) continue;
       
-      // Parse and re-stringify to ensure proper JSON formatting
-      const itemContent = JSON.stringify(JSON.parse(item.body), null, 2);
-      const blobUrl = `data:application/json;charset=utf-8,${encodeURIComponent(itemContent)}`;
+      // Create base filename without extension - add published date for published posts
+      let baseFileName = `${directory}/`;
+      let postDir = "";
       
-      // Create filename - add published date for published posts
-      let fileName = `${directory}/`;
       if (contentType === 'published' && item.publishedAt) {
         const publishDate = new Date(item.publishedAt);
         const dateStr = publishDate.toISOString().split('T')[0]; // YYYY-MM-DD format
-        fileName += `${dateStr}_`;
+        baseFileName += `${dateStr}_`;
       }
       
-      fileName += `${(item.title || 'untitled')
+      const slugPart = (item.title || 'untitled')
         .replace(/[^a-z0-9]/gi, '_')
-        .toLowerCase()}_${item.id}.json`;
-
-      const downloadId = await chrome.downloads.download({
-        url: blobUrl,
-        filename: fileName,
-        saveAs: false,
-        conflictAction: "overwrite",
-      });
+        .toLowerCase();
       
+      baseFileName += `${slugPart}_${item.id}`;
+      console.log(baseFileName);
+
+      // For published posts, create a directory structure
+      if (contentType === 'published') {
+        postDir = baseFileName;
+        
+        // Save the tiptap JSON
+        const itemContent = JSON.stringify(JSON.parse(item.body), null, 2);
+        const jsonBlobUrl = `data:application/json;charset=utf-8,${encodeURIComponent(itemContent)}`;
+        
+        await chrome.downloads.download({
+          url: jsonBlobUrl,
+          filename: `${postDir}--content.json`,
+          saveAs: false,
+          conflictAction: "overwrite",
+        });
+        
+        // Save HTML content if available
+        if (item.bodyHtml) {
+          const htmlBlobUrl = `data:text/html;charset=utf-8,${encodeURIComponent(item.bodyHtml)}`;
+          
+          await chrome.downloads.download({
+            url: htmlBlobUrl,
+            filename: `${postDir}--post.html`,
+            saveAs: false,
+            conflictAction: "overwrite",
+          });
+        }
+      } else {
+        // For drafts, use the original approach - just save the JSON file
+        const itemContent = JSON.stringify(JSON.parse(item.body), null, 2);
+        const blobUrl = `data:application/json;charset=utf-8,${encodeURIComponent(itemContent)}`;
+        
+        await chrome.downloads.download({
+          url: blobUrl,
+          filename: `${baseFileName}.json`,
+          saveAs: false,
+          conflictAction: "overwrite",
+        });
+      }
     } catch (error) {
       console.error(`Error saving ${contentType} file:`, error);
     }
