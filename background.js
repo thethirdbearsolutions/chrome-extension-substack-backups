@@ -77,16 +77,6 @@ async function fetchAndSaveContent(contentType) {
             
             itemDetail = await detailResponse.json();
             
-            // Extract text excerpt from HTML
-            let bodyText = "";
-            try {
-              bodyText = itemDetail.body_html
-                .replace(/<[^>]*>?/gm, '') // Strip HTML tags
-                .slice(0, 150) + '...';
-            } catch (e) {
-              console.error('Error extracting text from HTML body', e);
-            }
-            
             // Now also fetch the draft version to get the unrendered JSON
             const draftUrl = `https://${settings.substackUrl}/api/v1/drafts/${item.id}`;
             const draftResponse = await fetch(draftUrl);
@@ -103,7 +93,6 @@ async function fetchAndSaveContent(contentType) {
               id: item.id,
               title: itemDetail.title,
               body: bodyContent,
-              textExcerpt: bodyText,
               slug: item.slug || '',
               updatedAt: itemDetail.updated_at,
               publishedAt: itemDetail.post_date,
@@ -188,7 +177,6 @@ async function generateAndSaveIndex(contentItems, directory, contentType) {
     // Add published-specific fields
     if (contentType === 'published') {
       indexItem.publishedAt = item.publishedAt;
-      indexItem.textExcerpt = item.textExcerpt;
       indexItem.coverImage = item.coverImage;
     }
     
