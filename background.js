@@ -138,7 +138,7 @@ async function fetchAndSaveContent(contentType, forceFullBackup = false) {
           else {
             // For published posts, we might need to check additional properties
             if (!cachedItem || 
-                (item.updated_at && new Date(item.updated_at) > new Date(cachedItem.updatedAt)) ||
+                (item.draft_updated_at && new Date(item.draft_updated_at) > new Date(cachedItem.updatedAt)) ||
                 forceFullBackup) {
               contentToFetch.push(item);
             }
