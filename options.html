@@ -3,6 +3,29 @@
   <head>
     <title>Extension Settings</title>
     <script src="options.js"></script>
+    <style>
+      .status {
+        margin-top: 10px;
+        padding: 8px;
+        border-radius: 4px;
+        display: none;
+      }
+      .success {
+        background-color: #dff0d8;
+        color: #3c763d;
+      }
+      .error {
+        background-color: #f2dede;
+        color: #a94442;
+      }
+      .action-buttons {
+        margin-top: 30px;
+      }
+      button {
+        margin-right: 10px;
+        padding: 5px 10px;
+      }
+    </style>
   </head>
   <body>
     <h1>Extension Settings</h1>
@@ -10,10 +33,20 @@
       <label for="substackUrl">Substack Base URL:</label>
       <input type="text" id="substackUrl" placeholder="example.substack.com" required />
       <br><br>
-      <label for="downloadDir">Download Directory:</label>
+      <label for="downloadDir">Drafts Download Directory:</label>
       <input type="text" id="downloadDir" placeholder="substack-drafts" required />
+      <br><br>
+      <label for="publishedDir">Published Posts Directory:</label>
+      <input type="text" id="publishedDir" placeholder="substack-published" required />
       <br><br>
       <button type="submit">Save</button>
     </form>
+    
+    <div class="action-buttons">
+      <button id="backupDraftsNow">Backup Drafts Now</button>
+      <button id="backupPublishedNow">Backup Published Posts Now</button>
+    </div>
+    
+    <div id="status" class="status"></div>
   </body>
 </html>
